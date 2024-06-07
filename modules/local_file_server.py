@@ -28,10 +28,13 @@ class RootFSHandler(FileSystemEventHandler):
     def __init__(self, rootfs_path, output_path):
         self.rootfs_path = rootfs_path
         self.output_path = output_path
+        self.archive_name = output_path + ".zip"
 
     def on_any_event(self, event: FileSystemEvent) -> None:
         if not event.is_directory:
-            logging.info("Root filesystem changed, packing it")
+            if "zip" in event.src_path:
+                return
+            logging.info("Root filesystem changed, packing it, %s", event.src_path)
             pack_rootfs(self.rootfs_path, self.output_path)
 
 class CustomHTTPHandler(http.server.SimpleHTTPRequestHandler):
