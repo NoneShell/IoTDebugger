@@ -5,10 +5,18 @@ program=$2
 port=$3
 
 gdbserver_cmd() {
+    if [ ! -x "${BIN_PATH}/gdbserver" ]; then
+        echo "[!] gdbserver not found in ${BIN_PATH}"
+        exit 1
+    fi
     "${BIN_PATH}/gdbserver" "$@"
 }
 
 pidof_cmd() {
+    if [ ! -x "${BIN_PATH}/pidof" ]; then
+        echo "[!] pidof not found in ${BIN_PATH}"
+        exit 1
+    fi
     "${BIN_PATH}/busybox" pidof "$1"
 }
 
@@ -20,31 +28,31 @@ if [ "$#" -lt 2 ]; then
 fi
 
 if [ -z "$port" ]; then
-    echo "No port provided: defaulting to 6666"
+    echo "[+] No port provided: defaulting to 6666"
     port="6666"
 fi
 
 if [ -z "$program" ]; then
-    echo "Please specify program name or PID"
+    echo "[!] Please specify program name or PID"
     exit 1
 fi
 
 if [ "$mode" != "-m" ] && [ "$mode" != "-s" ]; then
-    echo "Invalid mode, please use -m or -s"
+    echo "[!] Invalid mode, please use -m or -s"
     exit 1
 fi
 
 case "$program" in
     ''|*[!0-9]*)
-        echo "Program mode"
+        echo "[*] Program mode"
         pid=$(pidof_cmd $program)
         if [ -z "$pid" ]; then
-            echo "Process $program not found"
+            echo "[!] Process $program not found"
             exit 1
         fi
         ;;
     *)
-        echo "PID mode"
+        echo "[*] PID mode"
         pid=$program
         ;;
 esac
