@@ -1,11 +1,3 @@
-'''
-Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
-Date: 2024-06-06 10:47:11
-LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
-LastEditTime: 2024-06-06 17:50:41
-FilePath: /IoTDebugger/modules/file_download.py
-Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
-'''
 import ftplib
 import os
 import argparse
@@ -29,7 +21,7 @@ class FTPDownload:
     def close(self):
         self.ftp.quit()
 
-    def download_dir(self, remote_path, local_path):
+    def download(self, remote_path, local_path):
         os.makedirs(local_path, exist_ok=True)
         queue = Queue()
         queue.put((remote_path, local_path))
@@ -75,4 +67,4 @@ if __name__ == "__main__":
         local_path = os.path.basename(remote_path)
 
     ftp = FTPDownload(server, port)
-    ftp.download_dir(remote_path, local_path)
+    ftp.download(remote_path, local_path)
