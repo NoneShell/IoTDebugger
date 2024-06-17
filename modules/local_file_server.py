@@ -5,6 +5,7 @@ import logging
 import os
 import threading
 import shutil
+import tarfile
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
@@ -24,15 +25,20 @@ def pack_rootfs(rootfs_path, output_path):
     shutil.make_archive(output_path, 'zip', rootfs_path)
     logging.info("Root filesystem packed to %s", output_path)
 
+    with tarfile.open(output_path + ".tar.gz", "w:gz") as tar:
+        tar.add(rootfs_path, arcname=os.path.basename(rootfs_path))
+        logging.info("Root filesystem packed to %s", output_path + ".tar.gz")
+
 class RootFSHandler(FileSystemEventHandler):
     def __init__(self, rootfs_path, output_path):
         self.rootfs_path = rootfs_path
         self.output_path = output_path
-        self.archive_name = output_path + ".zip"
 
     def on_any_event(self, event: FileSystemEvent) -> None:
         if not event.is_directory:
             if "zip" in event.src_path:
+                return
+            if "tar.gz" in event.src_path:
                 return
             logging.info("Root filesystem changed, packing it, %s", event.src_path)
             pack_rootfs(self.rootfs_path, self.output_path)
